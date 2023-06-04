@@ -8,6 +8,8 @@
 #include "Kismet/GameplayStatics.h"
 #include "Sound/SoundCue.h"
 #include "Engine\SkeletalMeshSocket.h"
+#include "DrawDebugHelpers.h"
+#include "Particles\ParticleSystemComponent.h"
 
 // Sets default values
 AShooterCharacter::AShooterCharacter() : BaseTurnRate(45.f), BaseLookUpRate(45.f)
@@ -95,6 +97,34 @@ void AShooterCharacter::FireWeapon()
 
 		if (MuzzleFlash) {
 			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), MuzzleFlash, SocketTransform);
+		}
+
+		FHitResult HitResult;
+		const FVector Start{ SocketTransform.GetLocation() };
+		const FQuat Rotation = SocketTransform.GetRotation();
+		const FVector RotationAxis = Rotation.GetAxisX();
+		const FVector End = Start + RotationAxis * 50'000.f;
+
+		FVector BeamEndPoint = End;
+
+		GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECollisionChannel::ECC_Visibility);
+
+		if (HitResult.bBlockingHit) {
+			// DrawDebugLine(GetWorld(), Start, End, FColor::Red, false, 2.f);
+			// DrawDebugPoint(GetWorld(), HitResult.Location, 5.f, FColor::Red, false, 2.f);
+
+			BeamEndPoint = HitResult.Location;
+
+			if (ImpactParticles) {
+				UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactParticles, HitResult.Location);
+			}
+		}
+
+		if (BeamParticles) {
+			UParticleSystemComponent* Beam = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), BeamParticles, SocketTransform);
+			if (Beam) {
+				Beam->SetVectorParameter(FName("Target"), BeamEndPoint);
+			}
 		}
 	}
 
