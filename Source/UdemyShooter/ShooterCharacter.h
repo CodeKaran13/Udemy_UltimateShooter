@@ -37,6 +37,13 @@ protected:
 	/// <param name="Rate">This is normalized rate, i.e. 1.0 means 100% of desired look up/down rate.</param>
 	void LookUpAtRate(float Rate);
 
+	/// <summary>
+	/// Called when the fire button is pressed
+	/// </summary>
+	void FireWeapon();
+
+	bool GetBeamEndLocation(const FVector& MuzzelSocketLocation, FVector& OutBeamLocation);
+
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -61,6 +68,26 @@ private:
 	// Base look up/down rate in deg/sec. Other scaling may affect final turn rate
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 		float BaseLookUpRate;
+
+	// Randomised gunshot Sound Cue
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
+	class USoundCue* FireSound;
+
+	// Flash spawned at barrel socket
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
+	class UParticleSystem* MuzzleFlash;
+
+	// Montage for firing weapon
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
+	class UAnimMontage* HipFireMontage;
+
+	// Particles spawned upon bullet impact
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
+	UParticleSystem* ImpactParticles;
+
+	// Smoke trail for bullets
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
+	UParticleSystem* BeamParticles;
 
 public:
 	// Returns CameraBoom subobject
