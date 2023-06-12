@@ -12,9 +12,9 @@
 #include "Particles\ParticleSystemComponent.h"
 
 // Sets default values
-AShooterCharacter::AShooterCharacter() : 
+AShooterCharacter::AShooterCharacter() :
 	// Base rates for turning/looking up
-	BaseTurnRate(45.f), 
+	BaseTurnRate(45.f),
 	BaseLookUpRate(45.f),
 	// Turn rates for aiming/not aiming
 	HipTurnRate(90.f),
@@ -27,11 +27,11 @@ AShooterCharacter::AShooterCharacter() :
 	MouseAimingTurnRate(0.2f),
 	MouseAimingLookUpRate(0.2f),
 	// True when aiming the weapon
-	bAiming(false), 
+	bAiming(false),
 	// Camera field of view values
 	CameraDefaultFOV(0.f), // set in BeginPlay
-	CameraZoomedFOV(35.f), 
-	CameraCurrentFOV(0.f), 
+	CameraZoomedFOV(35.f),
+	CameraCurrentFOV(0.f),
 	ZoomInterpSpeed(20.f)
 {
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
@@ -286,6 +286,18 @@ void AShooterCharacter::SetLookRates()
 	}
 }
 
+void AShooterCharacter::CalculateCrosshairSpread(float DeltaTime)
+{
+	FVector2D WalkSpeedRange{ 0.f, 600.f };
+	FVector2D VelocityMultiplierRange{ 0.f, 1.f };
+	FVector Velocity{ GetVelocity() };
+	Velocity.Z = 0.f;
+
+	CrosshairVelocityFactor = FMath::GetMappedRangeValueClamped(WalkSpeedRange, VelocityMultiplierRange, Velocity.Size());
+
+	CrosshairSpreadMultiplier = 0.5f + CrosshairVelocityFactor;
+}
+
 // Called every frame
 void AShooterCharacter::Tick(float DeltaTime)
 {
@@ -295,6 +307,8 @@ void AShooterCharacter::Tick(float DeltaTime)
 	CameraInterpZoom(DeltaTime);
 	// Change look sensitivity based on aiming
 	SetLookRates();
+	// Calculate crosshair spread multiplier
+	CalculateCrosshairSpread(DeltaTime);
 }
 
 // Called to bind functionality to input
@@ -319,5 +333,10 @@ void AShooterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 
 	PlayerInputComponent->BindAction("AimingButton", IE_Pressed, this, &AShooterCharacter::AimingButtonPressed);
 	PlayerInputComponent->BindAction("AimingButton", IE_Released, this, &AShooterCharacter::AimingButtonReleased);
+}
+
+float AShooterCharacter::GetCrosshairSpreadMultiplier() const
+{
+	return CrosshairSpreadMultiplier;
 }
 
