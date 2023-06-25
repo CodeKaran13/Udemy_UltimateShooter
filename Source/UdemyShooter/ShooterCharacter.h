@@ -97,7 +97,6 @@ protected:
 	void DropWeapon();
 
 	void SelectButtonPressed();
-
 	void SelectButtonReleased();
 
 public:
