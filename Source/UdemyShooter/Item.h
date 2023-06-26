@@ -137,6 +137,10 @@ private:
 	// Initial Yaw Offset between the camera and the interping Item
 	float InterpInitialYawOffset;
 
+	// Curve used to scale the Item when interping
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Item Properties", meta = (AllowPrivateAccess = "true"))
+		UCurveFloat* ItemScaleCurve;
+
 public:
 	FORCEINLINE UWidgetComponent* GetPickupWidget() const { return PickupWidget; }
 
