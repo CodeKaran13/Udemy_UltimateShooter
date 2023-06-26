@@ -93,35 +93,35 @@ void AItem::SetActiveStars()
 
 	switch (ItemRarity)
 	{
-	case EItemRarity::EIR_Damaged:
-		ActiveStars[1] = true;
-		break;
-	case EItemRarity::EIR_Common:
-		ActiveStars[1] = true;
-		ActiveStars[2] = true;
-		break;
-	case EItemRarity::EIR_Uncommon:
-		ActiveStars[1] = true;
-		ActiveStars[2] = true;
-		ActiveStars[3] = true;
-		break;
-	case EItemRarity::EIR_Rare:
-		ActiveStars[1] = true;
-		ActiveStars[2] = true;
-		ActiveStars[3] = true;
-		ActiveStars[4] = true;
-		break;
-	case EItemRarity::EIR_Legendary:
-		break;
-		ActiveStars[1] = true;
-		ActiveStars[2] = true;
-		ActiveStars[3] = true;
-		ActiveStars[4] = true;
-		ActiveStars[5] = true;
-	case EItemRarity::EIR_MAX:
-		break;
-	default:
-		break;
+		case EItemRarity::EIR_Damaged:
+			ActiveStars[1] = true;
+			break;
+		case EItemRarity::EIR_Common:
+			ActiveStars[1] = true;
+			ActiveStars[2] = true;
+			break;
+		case EItemRarity::EIR_Uncommon:
+			ActiveStars[1] = true;
+			ActiveStars[2] = true;
+			ActiveStars[3] = true;
+			break;
+		case EItemRarity::EIR_Rare:
+			ActiveStars[1] = true;
+			ActiveStars[2] = true;
+			ActiveStars[3] = true;
+			ActiveStars[4] = true;
+			break;
+		case EItemRarity::EIR_Legendary:
+			break;
+			ActiveStars[1] = true;
+			ActiveStars[2] = true;
+			ActiveStars[3] = true;
+			ActiveStars[4] = true;
+			ActiveStars[5] = true;
+		case EItemRarity::EIR_MAX:
+			break;
+		default:
+			break;
 	}
 }
 
@@ -129,89 +129,118 @@ void AItem::SetItemProperties(EItemState State)
 {
 	switch (State)
 	{
-	case EItemState::EIS_Pickup:
-		// Set Mesh properties
-		ItemMesh->SetSimulatePhysics(false);
-		ItemMesh->SetEnableGravity(false);
-		ItemMesh->SetVisibility(true);
-		ItemMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
-		ItemMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		// Set AreaSphere properties
-		AreaSphere->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Overlap);
-		AreaSphere->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-		// Set collision box properties
-		CollisionBox->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
-		CollisionBox->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Block);
-		CollisionBox->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-		break;
-	case EItemState::EIS_EquipInterping:
-		PickupWidget->SetVisibility(false);
-		// Set Mesh properties
-		ItemMesh->SetSimulatePhysics(false);
-		ItemMesh->SetEnableGravity(false);
-		ItemMesh->SetVisibility(true);
-		ItemMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
-		ItemMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		// Set AreaSphere properties
-		AreaSphere->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
-		AreaSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		// Set collision box properties
-		CollisionBox->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
-		CollisionBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		break;
-	case EItemState::EIS_PickedUp:
-		break;
-	case EItemState::EIS_Equipped:
-		PickupWidget->SetVisibility(false);
-		// Set Mesh properties
-		ItemMesh->SetSimulatePhysics(false);
-		ItemMesh->SetEnableGravity(false);
-		ItemMesh->SetVisibility(true);
-		ItemMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
-		ItemMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		// Set AreaSphere properties
-		AreaSphere->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
-		AreaSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		// Set collision box properties
-		CollisionBox->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
-		CollisionBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		break;
-	case EItemState::EIS_Falling:
-		// Set Mesh properties
-		ItemMesh->SetSimulatePhysics(true);
-		ItemMesh->SetEnableGravity(true);
-		ItemMesh->SetVisibility(true);
-		ItemMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
-		ItemMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-		ItemMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldStatic, ECollisionResponse::ECR_Block);
-		// Set AreaSphere properties
-		AreaSphere->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
-		AreaSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		// Set collision box properties
-		CollisionBox->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
-		CollisionBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		break;
-	case EItemState::EIS_MAX:
-		break;
-	default:
-		break;
+		case EItemState::EIS_Pickup:
+			// Set Mesh properties
+			ItemMesh->SetSimulatePhysics(false);
+			ItemMesh->SetEnableGravity(false);
+			ItemMesh->SetVisibility(true);
+			ItemMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+			ItemMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+			// Set AreaSphere properties
+			AreaSphere->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Overlap);
+			AreaSphere->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+			// Set collision box properties
+			CollisionBox->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+			CollisionBox->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Block);
+			CollisionBox->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+			break;
+		case EItemState::EIS_EquipInterping:
+			PickupWidget->SetVisibility(false);
+			// Set Mesh properties
+			ItemMesh->SetSimulatePhysics(false);
+			ItemMesh->SetEnableGravity(false);
+			ItemMesh->SetVisibility(true);
+			ItemMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+			ItemMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+			// Set AreaSphere properties
+			AreaSphere->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+			AreaSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+			// Set collision box properties
+			CollisionBox->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+			CollisionBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+			break;
+		case EItemState::EIS_PickedUp:
+			break;
+		case EItemState::EIS_Equipped:
+			PickupWidget->SetVisibility(false);
+			// Set Mesh properties
+			ItemMesh->SetSimulatePhysics(false);
+			ItemMesh->SetEnableGravity(false);
+			ItemMesh->SetVisibility(true);
+			ItemMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+			ItemMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+			// Set AreaSphere properties
+			AreaSphere->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+			AreaSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+			// Set collision box properties
+			CollisionBox->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+			CollisionBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+			break;
+		case EItemState::EIS_Falling:
+			// Set Mesh properties
+			ItemMesh->SetSimulatePhysics(true);
+			ItemMesh->SetEnableGravity(true);
+			ItemMesh->SetVisibility(true);
+			ItemMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+			ItemMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+			ItemMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldStatic, ECollisionResponse::ECR_Block);
+			// Set AreaSphere properties
+			AreaSphere->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+			AreaSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+			// Set collision box properties
+			CollisionBox->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+			CollisionBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+			break;
+		case EItemState::EIS_MAX:
+			break;
+		default:
+			break;
 	}
 }
 
 void AItem::FinishInterping()
 {
+	bInterping = false;
 	if (Character)
 	{
 		Character->GetPickupItem(this);
 	}
-	bInterping = false;
+}
+
+void AItem::ItemInterp(float DeltaTime)
+{
+	if (!bInterping)
+	{
+		return;
+	}
+
+	if (Character && ItemZCurve)
+	{
+		// Elapsed time since we started ItemInterpTimer
+		const float ElapsedTime = GetWorldTimerManager().GetTimerElapsed(ItemInterpTimer);
+		// Get curve value corresponding to ElapsedTime
+		const float CurveValue = ItemZCurve->GetFloatValue(ElapsedTime);
+		// Get the item's initial location when the curve started
+		FVector ItemLocation = ItemInterpStartLocation;
+		// Get location in front of the camera
+		const FVector CameraInterpLocation{ Character->GetCameraInterpLocation() };
+
+		// Vector from Item to Camera Interp Location, X and Y are zeroed out
+		const FVector ItemToCamera{ FVector(0.f, 0.f, (CameraInterpLocation - ItemLocation).Z) };
+		// Scale factor to multiply with CurveValue
+		const float DeltaZ = ItemToCamera.Size();
+
+		ItemLocation.Z += CurveValue * DeltaZ;
+		SetActorLocation(ItemLocation, true, nullptr, ETeleportType::TeleportPhysics);
+	}
 }
 
 // Called every frame
 void AItem::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+	// Handle Item interping when in EquipInterping State
+	ItemInterp(DeltaTime);
 }
 
 void AItem::SetItemState(EItemState State)

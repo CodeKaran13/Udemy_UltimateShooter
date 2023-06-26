@@ -21,7 +21,9 @@ protected:
 	void StopFalling();
 private:
 	FTimerHandle ThrowWeaponTimer;
+
 	float ThrowWeaponTime;
+
 	bool bFalling;
 public:
 	// Adds an impulse to the Weapon
