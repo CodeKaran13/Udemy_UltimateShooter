@@ -12,6 +12,9 @@
 #include "Particles\ParticleSystemComponent.h"
 #include "Item.h"
 #include "Components/WidgetComponent.h"
+#include "Weapon.h"
+#include "Components/SphereComponent.h"
+#include "Components/BoxComponent.h"
 
 // Sets default values
 AShooterCharacter::AShooterCharacter() :
@@ -49,7 +52,11 @@ AShooterCharacter::AShooterCharacter() :
 	bShouldFire(true),
 	AutomaticFireRate(0.1f),
 	// Item trace variables
-	bShouldTraceForItems(false)
+	bShouldTraceForItems(false),
+	OverlappedItemCount(0),
+	// Camera interp location variables
+	CameraInterpDistance(250.f),
+	CameraInterpElevation(65.f)
 {
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -88,6 +95,9 @@ void AShooterCharacter::BeginPlay()
 		CameraDefaultFOV = GetFollowCamera()->FieldOfView;
 		CameraCurrentFOV = CameraDefaultFOV;
 	}
+
+	// Spawn the default weapon and equip it to the mesh
+	EquipWeapon(SpawnDefaultWeapon());
 }
 
 void AShooterCharacter::MoveForward(float Value)
@@ -419,17 +429,17 @@ void AShooterCharacter::TraceForItems()
 		TraceUnderCrosshairs(ItemTraceResult, HitLocation);
 		if (ItemTraceResult.bBlockingHit)
 		{
-			AItem* HitItem = Cast<AItem>(ItemTraceResult.GetActor());
-			if (HitItem && HitItem->GetPickupWidget())
+			TraceHitItem = Cast<AItem>(ItemTraceResult.GetActor());
+			if (TraceHitItem && TraceHitItem->GetPickupWidget())
 			{
 				// Show Item's Pickup Widget
-				HitItem->GetPickupWidget()->SetVisibility(true);
+				TraceHitItem->GetPickupWidget()->SetVisibility(true);
 			}
 
 			// We hit an AItem last frame
 			if (TraceHitItemLastFrame)
 			{
-				if (HitItem != TraceHitItemLastFrame)
+				if (TraceHitItem != TraceHitItemLastFrame)
 				{
 					// We are hitting different AItem this frame from last frame
 					// Or AItem is null
@@ -438,7 +448,7 @@ void AShooterCharacter::TraceForItems()
 			}
 
 			// Store a reference to HitItem for next frame
-			TraceHitItemLastFrame = HitItem;
+			TraceHitItemLastFrame = TraceHitItem;
 		}
 	}
 	else if (TraceHitItemLastFrame)
@@ -447,6 +457,67 @@ void AShooterCharacter::TraceForItems()
 		// Item last frame should not show widget
 		TraceHitItemLastFrame->GetPickupWidget()->SetVisibility(false);
 	}
+}
+
+AWeapon* AShooterCharacter::SpawnDefaultWeapon()
+{
+	// Check the TSubclassOf variable
+	if (DefaultWeaponClass)
+	{
+		// Spawn the Weapon
+		return GetWorld()->SpawnActor<AWeapon>(DefaultWeaponClass);
+	}
+	return nullptr;
+}
+
+void AShooterCharacter::EquipWeapon(AWeapon* WeaponToEquip)
+{
+	if (WeaponToEquip)
+	{
+		// Get the Hand Socket
+		const USkeletalMeshSocket* HandSocket = GetMesh()->GetSocketByName(FName("RightHandSocket"));
+		if (HandSocket)
+		{
+			// Attach the Weapon to the hand socket RightHandSocket
+			HandSocket->AttachActor(WeaponToEquip, GetMesh());
+		}
+
+		// Set EquippedWeapon to the newly spawned Weapon
+		EquippedWeapon = WeaponToEquip;
+		EquippedWeapon->SetItemState(EItemState::EIS_Equipped);
+	}
+}
+
+void AShooterCharacter::DropWeapon()
+{
+	if (EquippedWeapon)
+	{
+		FDetachmentTransformRules DetachmentTransformRules(EDetachmentRule::KeepWorld, true);
+		EquippedWeapon->GetItemMesh()->DetachFromComponent(DetachmentTransformRules);
+
+		EquippedWeapon->SetItemState(EItemState::EIS_Falling);
+		EquippedWeapon->ThrowWeapon();
+	}
+}
+
+void AShooterCharacter::SelectButtonPressed()
+{
+	if (TraceHitItem)
+	{
+		TraceHitItem->StartItemCurve(this);
+	}
+}
+
+void AShooterCharacter::SelectButtonReleased()
+{
+}
+
+void AShooterCharacter::SwapWeapon(AWeapon* WeaponToSwap)
+{
+	DropWeapon();
+	EquipWeapon(WeaponToSwap);
+	TraceHitItem = nullptr;
+	TraceHitItemLastFrame = nullptr;
 }
 
 // Called every frame
@@ -487,6 +558,9 @@ void AShooterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 
 	PlayerInputComponent->BindAction("AimingButton", IE_Pressed, this, &AShooterCharacter::AimingButtonPressed);
 	PlayerInputComponent->BindAction("AimingButton", IE_Released, this, &AShooterCharacter::AimingButtonReleased);
+
+	PlayerInputComponent->BindAction("Select", IE_Pressed, this, &AShooterCharacter::SelectButtonPressed);
+	PlayerInputComponent->BindAction("Select", IE_Released, this, &AShooterCharacter::SelectButtonReleased);
 }
 
 float AShooterCharacter::GetCrosshairSpreadMultiplier() const
@@ -505,6 +579,24 @@ void AShooterCharacter::IncrementOverlappedItemCount(int8 Amount)
 	{
 		OverlappedItemCount += Amount;
 		bShouldTraceForItems = true;
+	}
+}
+
+FVector AShooterCharacter::GetCameraInterpLocation()
+{
+	const FVector CameraWorldLocation{ FollowCamera->GetComponentLocation() };
+	const FVector CameraForward{ FollowCamera->GetForwardVector() };
+
+	// Desired = CameraWorldLocation + Forward * A + Up * B
+	return CameraWorldLocation + CameraForward * CameraInterpDistance + FVector(0.f, 0.f, CameraInterpElevation);
+}
+
+void AShooterCharacter::GetPickupItem(AItem* Item)
+{
+	auto Weapon = Cast<AWeapon>(Item);
+	if (Weapon)
+	{
+		SwapWeapon(Weapon);
 	}
 }
 
