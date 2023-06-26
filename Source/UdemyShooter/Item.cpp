@@ -12,7 +12,12 @@ AItem::AItem() :
 	ItemName(FString("Default")),
 	ItemCount(0),
 	ItemRarity(EItemRarity::EIR_Common),
-	ItemState(EItemState::EIS_Pickup)
+	ItemState(EItemState::EIS_Pickup),
+	// Item interp variables
+	ZCurveTime(.7f),
+	ItemInterpStartLocation(FVector(0.f)),
+	CameraTargetLocation(FVector(0.f)),
+	bInterping(false)
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -140,6 +145,19 @@ void AItem::SetItemProperties(EItemState State)
 		CollisionBox->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 		break;
 	case EItemState::EIS_EquipInterping:
+		PickupWidget->SetVisibility(false);
+		// Set Mesh properties
+		ItemMesh->SetSimulatePhysics(false);
+		ItemMesh->SetEnableGravity(false);
+		ItemMesh->SetVisibility(true);
+		ItemMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+		ItemMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		// Set AreaSphere properties
+		AreaSphere->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+		AreaSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		// Set collision box properties
+		CollisionBox->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+		CollisionBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		break;
 	case EItemState::EIS_PickedUp:
 		break;
@@ -180,6 +198,15 @@ void AItem::SetItemProperties(EItemState State)
 	}
 }
 
+void AItem::FinishInterping()
+{
+	if (Character)
+	{
+		Character->GetPickupItem(this);
+	}
+	bInterping = false;
+}
+
 // Called every frame
 void AItem::Tick(float DeltaTime)
 {
@@ -191,4 +218,16 @@ void AItem::SetItemState(EItemState State)
 {
 	ItemState = State;
 	SetItemProperties(State);
+}
+
+void AItem::StartItemCurve(AShooterCharacter* Char)
+{
+	// Store a handle to the Character
+	Character = Char;
+	// Store initial location of the item
+	ItemInterpStartLocation = GetActorLocation();
+	bInterping = true;
+	SetItemState(EItemState::EIS_EquipInterping);
+
+	GetWorldTimerManager().SetTimer(ItemInterpTimer, this, &AItem::FinishInterping, ZCurveTime);
 }
