@@ -59,7 +59,9 @@ AShooterCharacter::AShooterCharacter() :
 	CameraInterpElevation(65.f),
 	// Starting Ammo amounts
 	Starting9mmAmmo(85),
-	StartingARAmmo(120)
+	StartingARAmmo(120),
+	// Combat variables
+	CombatState(ECombatState::ECS_Unoccupied)
 {
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -369,9 +371,9 @@ void AShooterCharacter::FinishCrosshairBulletFire()
 
 void AShooterCharacter::FireButtonPressed()
 {
+	bFireButtonPressed = true;
 	if (WeaponHasAmmo())
 	{
-		bFireButtonPressed = true;
 		StartFireTimer();
 	}
 }
