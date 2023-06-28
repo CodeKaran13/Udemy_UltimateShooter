@@ -36,10 +36,12 @@ class UDEMYSHOOTER_API AItem : public AActor
 	GENERATED_BODY()
 
 public:
+
 	// Sets default values for this actor's properties
 	AItem();
 
 protected:
+
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
@@ -64,10 +66,12 @@ protected:
 	void ItemInterp(float DeltaTime);
 
 public:
+
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
 private:
+
 	// Skeletal mesh for the item
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Item Properties", meta = (AllowPrivateAccess = "true"))
 		USkeletalMeshComponent* ItemMesh;
@@ -141,7 +145,16 @@ private:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Item Properties", meta = (AllowPrivateAccess = "true"))
 		UCurveFloat* ItemScaleCurve;
 
+	// Sound played when Item is picked up
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item Properties", meta = (AllowPrivateAccess = "true"))
+		class USoundCue* PickupSound;
+
+	// Sound played when Item is equipped
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item Properties", meta = (AllowPrivateAccess = "true"))
+		class USoundCue* EquipSound;
+
 public:
+
 	FORCEINLINE UWidgetComponent* GetPickupWidget() const { return PickupWidget; }
 
 	FORCEINLINE USphereComponent* GetAreaSphere() const { return AreaSphere; }
@@ -154,6 +167,12 @@ public:
 
 	FORCEINLINE USkeletalMeshComponent* GetItemMesh() { return ItemMesh; }
 
+	FORCEINLINE USoundCue* GetPickupSound() const { return PickupSound; }
+
+	FORCEINLINE USoundCue* GetEquipSound() const { return EquipSound; }
+
 	// Called from the AShooter character class
 	void StartItemCurve(AShooterCharacter* Char);
+
+
 };
