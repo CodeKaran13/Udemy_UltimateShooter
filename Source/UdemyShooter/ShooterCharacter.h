@@ -127,11 +127,19 @@ protected:
 	// Check to make sure our Weapon has Ammo
 	bool WeaponHasAmmo();
 
+	// FireWeapon functions
 	void PlayFireSound();
-
 	void SendBullet();
-
 	void PlayGunFireMontage();
+
+	// Bound to the R key and Gamepad Face Button Left
+	void ReloadButtonPressed();
+
+	// Handle reloading of the Weapon
+	void ReloadWeapon();
+
+	UFUNCTION(BlueprintCallable)
+		void FinishReloading();
 
 public:
 	// Called every frame
@@ -311,6 +319,10 @@ private:
 	// CombatState, can only fire or reload if Unoccupied
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Combat, meta = (AllowPrivateAccess = "true"))
 		ECombatState CombatState;
+
+	// Montage for reload animations
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
+		UAnimMontage* ReloadMontage;
 
 public:
 	// Returns CameraBoom subobject
