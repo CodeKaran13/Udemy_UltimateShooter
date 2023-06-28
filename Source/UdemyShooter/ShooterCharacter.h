@@ -4,7 +4,18 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "AmmoType.h"
 #include "ShooterCharacter.generated.h"
+
+UENUM(BlueprintType)
+enum class ECombatState : uint8
+{
+	ECS_Unoccupied UMETA(DisplayName = "Unoccupied"),
+	ECS_FireTimerInProgress UMETA(DisplayName = "FireTimerInProgress"),
+	ECS_Reloading UMETA(DisplayName = "Reloading"),
+
+	ECS_MAX UMETA(DisplayName = "DefaultMAX")
+};
 
 UCLASS()
 class UDEMYSHOOTER_API AShooterCharacter : public ACharacter
@@ -101,6 +112,29 @@ protected:
 
 	// Drops currently equipped Weapon and equips TraceHitItem
 	void SwapWeapon(AWeapon* WeaponToSwap);
+
+	// Initialize the Ammo Map with ammo
+	void InitializeAmmoMap();
+
+	// Check to make sure our Weapon has Ammo
+	bool WeaponHasAmmo();
+
+	// FireWeapon functions
+	void PlayFireSound();
+	void SendBullet();
+	void PlayGunFireMontage();
+
+	// Bound to the R key and Gamepad Face Button Left
+	void ReloadButtonPressed();
+
+	// Handle reloading of the Weapon
+	void ReloadWeapon();
+
+	UFUNCTION(BlueprintCallable)
+		void FinishReloading();
+
+	// Checks to see if we have ammo  of the EquippedWeapon's AmmoType
+	bool CarryingAmmo();
 
 public:
 	// Called every frame
@@ -264,6 +298,26 @@ private:
 	// Distance upward from the camera for the interp destination
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Items, meta = (AllowPrivateAccess = "true"))
 		float CameraInterpElevation;
+
+	// Map to keep track of ammo of the different ammo types
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Items, meta = (AllowPrivateAccess = "true"))
+		TMap<EAmmoType, int32> AmmoMap;
+
+	// Starting amount of 9mm ammo
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Items, meta = (AllowPrivateAccess = "true"))
+		int32 Starting9mmAmmo;
+
+	// Starting amount of AR ammo
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Items, meta = (AllowPrivateAccess = "true"))
+		int32 StartingARAmmo;
+
+	// CombatState, can only fire or reload if Unoccupied
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Combat, meta = (AllowPrivateAccess = "true"))
+		ECombatState CombatState;
+
+	// Montage for reload animations
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
+		UAnimMontage* ReloadMontage;
 
 public:
 	// Returns CameraBoom subobject
