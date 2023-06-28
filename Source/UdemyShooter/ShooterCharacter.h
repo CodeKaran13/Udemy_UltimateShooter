@@ -127,6 +127,12 @@ protected:
 	// Check to make sure our Weapon has Ammo
 	bool WeaponHasAmmo();
 
+	void PlayFireSound();
+
+	void SendBullet();
+
+	void PlayGunFireMontage();
+
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
