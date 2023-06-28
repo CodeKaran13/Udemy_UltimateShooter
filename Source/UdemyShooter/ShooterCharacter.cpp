@@ -582,29 +582,64 @@ void AShooterCharacter::ReloadButtonPressed()
 void AShooterCharacter::ReloadWeapon()
 {
 	if (CombatState != ECombatState::ECS_Unoccupied) return;
+	if (EquippedWeapon == nullptr) return;
 
-	CombatState = ECombatState::ECS_Reloading;
 	// Do we have ammo for the correct type?
-	// TODO: Create bool function CarryingAmmo()
-	if (true) // Replace with CarryingAmmo()
+	if (CarryingAmmo())
 	{
-		// TODO: Create an enum for Weapon Type
-		// TODO: switch on EquippedWeapon->WeaponType
-		FName MontageSection(TEXT("Reload SMG"));
-
+		CombatState = ECombatState::ECS_Reloading;
 		UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
 		if (AnimInstance && ReloadMontage)
 		{
 			AnimInstance->Montage_Play(ReloadMontage);
-			AnimInstance->Montage_JumpToSection(MontageSection);
+			AnimInstance->Montage_JumpToSection(EquippedWeapon->GetReloadMontageSection());
 		}
 	}
 }
 
 void AShooterCharacter::FinishReloading()
 {
-	// TODO: Update AmmoMap
 	CombatState = ECombatState::ECS_Unoccupied;
+
+	if (EquippedWeapon == nullptr) return;
+
+	const auto AmmoType = EquippedWeapon->GetAmmoType();
+	// Update the AmmoMap
+	if (AmmoMap.Contains(AmmoType))
+	{
+		// Amount of Ammo the character is carrying of the EquippedWeapon Type
+		int32 CarriedAmmo = AmmoMap[AmmoType];
+		// Space left in the magazine of EquippedWeapon
+		const int32 MagEmptySpace = EquippedWeapon->GetMagazineCapacity() - EquippedWeapon->GetAmmo();
+
+		if (MagEmptySpace > CarriedAmmo)
+		{
+			// Reload the magazone with all the ammo we are carrying
+			EquippedWeapon->ReloadAmmo(CarriedAmmo);
+			CarriedAmmo = 0;
+			AmmoMap.Add(AmmoType, CarriedAmmo);
+		}
+		else
+		{
+			// Fill the magazine
+			EquippedWeapon->ReloadAmmo(MagEmptySpace);
+			CarriedAmmo -= MagEmptySpace;
+			AmmoMap.Add(AmmoType, CarriedAmmo);
+		}
+	}
+}
+
+bool AShooterCharacter::CarryingAmmo()
+{
+	if (EquippedWeapon == nullptr) return false;
+
+	auto AmmoType = EquippedWeapon->GetAmmoType();
+	if (AmmoMap.Contains(AmmoType))
+	{
+		return AmmoMap[AmmoType] > 0;
+	}
+
+	return false;
 }
 
 // Called every frame
