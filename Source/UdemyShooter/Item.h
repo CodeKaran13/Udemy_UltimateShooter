@@ -174,5 +174,5 @@ public:
 	// Called from the AShooter character class
 	void StartItemCurve(AShooterCharacter* Char);
 
-
+	FORCEINLINE int32 GetItemCount() const { return ItemCount; }
 };
