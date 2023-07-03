@@ -57,24 +57,13 @@ protected:
 	void SetActiveStars();
 
 	// Set properties of the Item's components based on State
-	void SetItemProperties(EItemState State);
+	virtual void SetItemProperties(EItemState State);
 
 	// Called when ItemInterping is finished
 	void FinishInterping();
 
 	// Handles Item interpolation when in the EquipInterping State
 	void ItemInterp(float DeltaTime);
-
-public:
-
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
-private:
-
-	// Skeletal mesh for the item
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Item Properties", meta = (AllowPrivateAccess = "true"))
-		USkeletalMeshComponent* ItemMesh;
 
 	// Line trace collides with box to show HUD widgets
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Item Properties", meta = (AllowPrivateAccess = "true"))
@@ -87,6 +76,17 @@ private:
 	// Enables item tracing when overlapped
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Item Properties", meta = (AllowPrivateAccess = "true"))
 		class USphereComponent* AreaSphere;
+
+public:
+
+	// Called every frame
+	virtual void Tick(float DeltaTime) override;
+
+private:
+
+	// Skeletal mesh for the item
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Item Properties", meta = (AllowPrivateAccess = "true"))
+		USkeletalMeshComponent* ItemMesh;
 
 	// The name which appears on the pickup widget
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Item Properties", meta = (AllowPrivateAccess = "true"))
@@ -174,5 +174,5 @@ public:
 	// Called from the AShooter character class
 	void StartItemCurve(AShooterCharacter* Char);
 
-
+	FORCEINLINE int32 GetItemCount() const { return ItemCount; }
 };
