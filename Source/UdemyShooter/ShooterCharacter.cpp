@@ -30,13 +30,13 @@ AShooterCharacter::AShooterCharacter() :
 	//Mouse look sensitivity scale factors
 	MouseHipTurnRate(1.0f),
 	MouseHipLookUpRate(1.0f),
-	MouseAimingTurnRate(0.2f),
-	MouseAimingLookUpRate(0.2f),
+	MouseAimingTurnRate(0.6f),
+	MouseAimingLookUpRate(0.6f),
 	// True when aiming the weapon
 	bAiming(false),
 	// Camera field of view values
 	CameraDefaultFOV(0.f), // set in BeginPlay
-	CameraZoomedFOV(45.f),
+	CameraZoomedFOV(35.f),
 	CameraCurrentFOV(0.f),
 	ZoomInterpSpeed(20.f),
 	// Crosshair spread factors
@@ -78,9 +78,9 @@ AShooterCharacter::AShooterCharacter() :
 	// Pulls in towards the character if there is a collision.
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
 	CameraBoom->SetupAttachment(RootComponent);
-	CameraBoom->TargetArmLength = 180.f; // Camera follows at this distance
+	CameraBoom->TargetArmLength = 240.f; // Camera follows at this distance
 	CameraBoom->bUsePawnControlRotation = true; // Rotates the arm based on the controller
-	CameraBoom->SocketOffset = FVector(0.f, 50.f, 45.f);
+	CameraBoom->SocketOffset = FVector(0.f, 35.f, 80.f);
 
 	// Creates a follow camera
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
