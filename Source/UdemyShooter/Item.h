@@ -91,6 +91,8 @@ protected:
 
 	void PlayPickupSound();
 
+	virtual void InitializeCustomDepth();
+
 public:
 
 	// Called every frame
@@ -200,4 +202,6 @@ public:
 
 	FORCEINLINE int32 GetItemCount() const { return ItemCount; }
 
+	virtual void EnableCustomDepth();
+	virtual void DisableCustomDepth();
 };
